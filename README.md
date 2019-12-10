@@ -12,6 +12,8 @@ installed via pip:
 python3 -m pip install allcopol
 ```
 
+Currently, only Linux systems are supported!
+
 ## Contained tools
 
 ### allcopol
