@@ -1,6 +1,7 @@
 # tested for PhyloNet 3.6.8
 from Bio import Phylo
-import concurrent, io, itertools, math, os, random, re, shutil, subprocess, sys, time
+import functools, io, itertools, math, multiprocessing
+import os, random, re, shutil, subprocess, sys, time
 
 # call PhyloNet:
 
@@ -42,6 +43,15 @@ def PhyloNet_single_job(trees, PhyloNet_line, step, conf, IO_files):
     IO_files.update([fname_input, fname_output])
 
 
+def call_PhyloNet(infile, conf):
+    outfile = os.path.splitext(infile)[0] + ".txt"
+    with open(outfile, "w") as fout:
+        p = subprocess.Popen(
+            ["java", conf.java_options, "-jar", conf.phylonet_path, infile], stdout=fout
+        )
+        p.wait()
+
+
 def PhyloNet_batch(trees, PhyloNet_lines, name, step, input_files, conf, IO_files):
     """
     Calls PhyloNet for multiple species tree reconstructions.
@@ -51,7 +61,7 @@ def PhyloNet_batch(trees, PhyloNet_lines, name, step, input_files, conf, IO_file
         PhyloNet_lines: tree inference instructions
         name: name polyploid taxon
         step: name of PhyloNet calls
-        input_files: list, stores names of currently processed 
+        input_files: list, stores names of currently processed
                      PhyloNet input files
         conf: namespace of program options
         IO_files: set, stores names of all existing PhyloNet input/output
@@ -88,25 +98,10 @@ def PhyloNet_batch(trees, PhyloNet_lines, name, step, input_files, conf, IO_file
             f.write("\n\nEND;\n")
         input_files.append(fname_chunk)
 
-    processes = set()
-
-    for infile in input_files:
-        outfile = os.path.splitext(infile)[0] + ".txt"
-
-        with open(outfile, "w") as fout:
-            processes.add(subprocess.Popen(
-                ["java", conf.java_options, "-jar", conf.phylonet_path, infile], stdout=fout
-            ))
-
-        if len(processes) >= conf.max_procs:
-            os.wait()
-            processes.difference_update(
-                [p for p in processes if p.poll() is not None])
-
-    # Check if all the child processes were closed
-    for p in processes:
-        if p.poll() is None:
-            p.wait()
+    # call PhyloNet
+    pool = multiprocessing.Pool(processes=conf.max_procs)
+    f = functools.partial(call_PhyloNet, conf=conf)
+    pool.map(f, input_files)
     
     # update file list
     IO_files.add(fname_head)

@@ -445,7 +445,7 @@ def main():
                     
     time_stop = time.time()
     
-    print("Total Time elapsed:", "%.2f" % (time_stop-time_start), "s")
+    print("Total time elapsed:", "%.2f" % (time_stop-time_start), "s")
 
 if __name__ == "__main__":
     main()

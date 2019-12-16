@@ -12,7 +12,7 @@ installed via pip:
 python3 -m pip install allcopol
 ```
 
-Currently, only Linux systems are supported!
+To run PhyloNet, Java 1.7 or later has to be installed.
 
 ## Contained tools
 
