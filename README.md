@@ -1,7 +1,8 @@
 # AllCoPol
 
-AllCoPol is collection of tools for the analysis of polyploids, that allows 
-to infer ancestral allele combinations as well as corresponding subgenome phylogenies.
+AllCoPol is a collection of tools for the analysis of polyploids, which allow to 
+infer ancestral allele combinations as well as corresponding subgenome 
+phylogenies.
 
 ## Installation
 
@@ -19,12 +20,19 @@ To run PhyloNet, Java 1.7 or later has to be installed.
 ### allcopol
 
 This is the main tool of the package implementing heuristic optimization of
-ancestral allele combinations. It requires at least four arguments, 
+ancestral allele combinations. To get a complete list of program options, type
+
+```bash
+allcopol --help
+```
+
+
+The program requires at least four arguments, 
 specifying the input files (`-A`, `-G`), the number of supplied gene trees per marker 
 (`-S`), and the path to a PhyloNet jar file (`-P`), 
-which can can be obtained from https://bioinfocs.rice.edu/phylonet (newest tested version: 3.8.0).
+which can be obtained from https://bioinfocs.rice.edu/phylonet (newest tested version: 3.8.0).
 Besides, the tabu tenure (`-t`) and the number of iterations (`-i`) are crucial 
-parameters, which have to be tuned for proper optimization. 
+ for proper optimization. 
 
 The allele mapping file (`-A`) is a tab-delimited text file with one line 
 per accession and four columns: accession, taxon, allele IDs (comma separated), 
@@ -47,11 +55,6 @@ marker can be supplied as consecutive lines in the tree file, e.g.
 Because the program cannot know from the input file which trees belong to the 
 same marker, the `-S` option has to be set correctly (for the example above: `-S 3`).
 
-To get a complete list of program options, type
-
-```bash
-allcopol --help
-```
 
 _Minimal example:_
 
@@ -96,13 +99,37 @@ If runtime is limiting, the number of evaluated solutions per iteration can be
 limited via the -s option. Note that this may be at the expense of a lower final
 solution quality.
 
+_Parameter tuning:_
+
+For single analyses, as far as runtime is not limiting, the simplest optimization strategy consists in repeated hillclimbing runs, allowing a high total number of iterations as described above.
+
+In contrast, using a tabu list of adequate length allows to escape from local optima and therefore does not require to restart from random solutions.
+This is usually more efficient because it allows to spend more time in promising regions of the search space.
+Unfortunately, there is no simple rule how to specify the tabu tenure which is critical for proper function.
+If it is set too small, the search can get stuck in local optima, if too high, many good solutions may be missed, which slows down the optimization progress.
+
+For single reconstructions, the user could simply try out some different values and keep the most parsimonious result.
+
+If many time-consuming (replicate) analyses have to be performed, it may be advisable to systematically measure the performance of different parameter settings before.
+In this case, the obtained numbers of extra lineages for each setting should be averaged over multiple runs to account for the involved stochasticity.
+Although suitable parameter settings are not easily transferable from one problem to another, it is often possible to find a good compromise which satisfies multiple similar analyses.
+For this purpose, the number of extra lineages averaged over some exemplary inputs may be taken into account.
+
+Whatever strategy is used, the applied heuristics cannot guarantee to find a global optimum.
+In practise, it may be necessary to weigh up between solution quality and computational burden (mainly dependent on -i and, optionally, -s).
+The preferred tabu tenure not only depends on the input, but also on the number of iterations, which should be multiple times higher, and the sample size parameter.
+
+From our experience, the final topology is often found long before the lowest number of extra lineages, so it may not not necessary to put too much effort into finetuning.
+If, on the other hand, repeated analyses end up with highly variable numbers of extra lineages, the used settings should questioned.
+
+
 
 ### create_indfile
 
 This script takes a number of allele mapping strings (one per line, obtained 
 by multiple runs of `allcopol` based on the same\* input files) as input and 
 prints a matrix representation of the inferred allele partitions. The latter can
-be used as input for Clumpp or `align_clusters`.
+be used as input for CLUMPP or `align_clusters`.
 
 \* The used gene trees may vary, but the underlying markers and their order in 
 the tree files must be identical.
@@ -124,8 +151,8 @@ command:
 create_indfile mappings.txt sp1 > example.indfile
 ```
 
-The second argument `sp1` is the name of the polyploid taxon, whose 
-pseudo-diploid ancestors have been inferred.
+The second argument `sp1` specifies the name of the polyploid taxon, whose 
+subgenomes have been inferred.
 
 example.indfile (output):
 
@@ -146,10 +173,11 @@ example.indfile (output):
 
 ### align_clusters
 
-This tool can be used to match clusters (pseudo-diploids) among multiple
+This tool can be used to match clusters (subgenomes) among multiple
 reconstructions. To avoid getting stuck in a local optimum, a tabu list is 
-applied, whose size can be specified via the `-t` option - unlike `allcopol`, 
-the heuristic used for this step seems to be relatively robust.
+applied, whose size can be specified via the `-t` option. Compared to `allcopol`, 
+the heuristic used for this step seems to be relatively robust with respect to 
+its parameters.
 `-n` sets the total number of optimization iterations.
 
 Applied to the matrix representation written above, the command
@@ -195,7 +223,7 @@ The command
 relabel_trees sp_trees.nw sp1 example.permutations
 ```
 
-yields
+prints the relabeled trees:
 
 ```text
 (sp3,(sp1_P1,(sp1_P2,sp2)));
@@ -204,6 +232,6 @@ yields
 (sp3,(sp1_P1,(sp1_P2,sp2)));
 ```
 
-Now that the pseudo-diploids are labeled according to their homology, 
+Now that the subgenomes are labeled according to their homology, 
 conventional consensus methods can be applied to the trees.
 
