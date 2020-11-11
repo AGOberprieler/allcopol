@@ -284,6 +284,16 @@ def main():
                                                 for leaf in tree.get_terminals()
                                                 if re.match(p, leaf.name)])
         
+        # check number of alleles
+        valid = True
+        for i_marker, n_alleles in enumerate(alleles_blockwise):
+            if len(n_alleles) > species.ploidy:
+                print("Error: too many alleles at marker " + str(i_marker + 1) + ":", file=sys.stderr)
+                print(", ".join([re.sub("_m[^_]+$", "", al) for al in alleles_blockwise[i_marker]]), file=sys.stderr)
+                valid = False
+        if not valid:
+            sys.exit()
+        
         n_alleles = [len(block) for block in alleles_blockwise]
         
         # initialization
