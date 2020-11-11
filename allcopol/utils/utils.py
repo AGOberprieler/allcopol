@@ -225,6 +225,7 @@ def read_allele_mapping(fname):
                 name = cols[0].strip()
                 species = cols[1].strip()
                 alleles = [ acc.strip() for acc in cols[2].split(",") if acc.strip() ]
+                alleles = sorted(set(alleles))
                 ploidy = int(cols[3].strip())
                 
                 if ploidy % 2:

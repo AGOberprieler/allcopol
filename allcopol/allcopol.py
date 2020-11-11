@@ -276,23 +276,21 @@ def main():
         
         for accession in species.accessions:
             # loop across loci/markers
-            for j in range(0, len(ptrees), conf.tree_sample_size):
-                tree = ptrees[j]
+            for i_marker in range(0, len(ptrees)//conf.tree_sample_size):
+                tree = ptrees[i_marker * conf.tree_sample_size]
                 # search patterns matching preprocessed alleles of current accession and marker
                 pattern_list = ["^" + re.escape(allele) + "_m[0-9]+$" for allele in accession.alleles]
-                alleles_blockwise.append([leaf.name for p in pattern_list 
+                alleles_marker_acc = [leaf.name for p in pattern_list 
                                                 for leaf in tree.get_terminals()
-                                                if re.match(p, leaf.name)])
-        
-        # check number of alleles
-        valid = True
-        for i_marker, n_alleles in enumerate(alleles_blockwise):
-            if len(n_alleles) > species.ploidy:
-                print("Error: too many alleles at marker " + str(i_marker + 1) + ":", file=sys.stderr)
-                print(", ".join([re.sub("_m[^_]+$", "", al) for al in alleles_blockwise[i_marker]]), file=sys.stderr)
-                valid = False
-        if not valid:
-            sys.exit()
+                                                if re.match(p, leaf.name)]
+                
+                # check number of alleles
+                if len(alleles_marker_acc) > species.ploidy:
+                    print("Error: too many alleles at marker " + str(i_marker + 1) + ":", file=sys.stderr)
+                    print(", ".join([re.sub("_m[^_]+$", "", al) for al in alleles_marker_acc]), file=sys.stderr)
+                    sys.exit()
+                    
+                alleles_blockwise.append(alleles_marker_acc)
         
         n_alleles = [len(block) for block in alleles_blockwise]
         
