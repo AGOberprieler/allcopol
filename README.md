@@ -201,7 +201,7 @@ and a second file containing the averaged cluster coefficients
 UPDATE: `align_clusters` can be replaced by the newer and much faster [Crimp](https://github.com/ulilautenschlager/crimp/) tool, e.g. by running `./crimp -n 20 example.indfile`.
 In this case, the relevant output file will be named "example.indfile.permutations".
 For small inputs as in this example, it is also possible to perform exact rather than heuristic optimization using the `-x` option, e.g. with `./crimp -x example.indfile`.
-By default, Crimp optimizes a slightly different objective function than the original `align_clusters`. To stick with the entropy-based one, you can use the `-e` option, however, scores will differ by a factor of log(2) because `align_clusters` uses natural logarithms whereas Crimp uses binary ones.
+By default, Crimp optimizes a slightly different objective function than the original `align_clusters`. To stick with the entropy-based one, you can use the `-e` option, however, scores will still differ by a factor of log(2) because `align_clusters` uses natural logarithms whereas Crimp uses binary ones.
 
 ### relabel_trees
 
