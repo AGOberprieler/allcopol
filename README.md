@@ -240,3 +240,10 @@ prints the relabeled trees:
 Now that the subgenomes are labeled according to their homology, 
 conventional consensus methods can be applied to the trees.
 
+## License
+
+AllCoPol is released under the [MIT license](LICENSE).
+
+## Citation
+
+Lautenschlager, U., Wagner, F. & Oberprieler, C. AllCoPol: inferring allele co-ancestry in polyploids. *BMC Bioinformatics* 21, 441 (2020). https://doi.org/10.1186/s12859-020-03750-9
