@@ -247,3 +247,5 @@ AllCoPol is released under the [MIT license](LICENSE).
 ## Citation
 
 Lautenschlager, U., Wagner, F. & Oberprieler, C. AllCoPol: inferring allele co-ancestry in polyploids. *BMC Bioinformatics* 21, 441 (2020). https://doi.org/10.1186/s12859-020-03750-9
+
+When using the `allcopol` command, PhyloNet should be cited as well. 
