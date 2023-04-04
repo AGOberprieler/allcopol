@@ -7,13 +7,21 @@ phylogenies.
 ## Installation
 
 AllCoPol is hosted at the Python Package Index (PyPI), so it can be easily 
-installed via pip:
+installed via pip (add `--user` if you do not have root privileges):
 
 ```bash
 python3 -m pip install allcopol
 ```
 
-To run PhyloNet, Java 1.7 or later has to be installed.
+Alternatively, you can install the latest version from GitHub. On Linux operating systems this can be done with
+
+```bash
+git clone https://github.com/AGOberprieler/allcopol
+cd allcopol
+python3 -m pip install .
+```
+
+To be able to run PhyloNet, Java 1.7 or later has to be installed.
 
 ## Contained tools
 
@@ -30,12 +38,12 @@ allcopol --help
 The program requires at least four arguments, 
 specifying the input files (`-A`, `-G`), the number of supplied gene trees per marker 
 (`-S`), and the path to a PhyloNet jar file (`-P`), 
-which can be obtained from https://bioinfocs.rice.edu/phylonet (newest tested version: 3.8.0).
+which can be obtained from https://bioinfocs.rice.edu/phylonet (newest tested version: 3.8.2).
 Besides, the tabu tenure (`-t`) and the number of iterations (`-i`) are crucial 
  for proper optimization. 
 
 The allele mapping file (`-A`) is a tab-delimited text file with one line 
-per accession and four columns: accession, taxon, allele IDs (comma separated), 
+per accession and four columns: accession, taxon, allele IDs (i.e., gene tree leaves; comma separated), 
 and ploidy level.
 The gene tree file (`-G`) consists of newick strings supplied as one tree per line. 
 For the trees, which are assumed to be rooted, topologies are sufficient while 
@@ -58,7 +66,7 @@ same marker, the `-S` option has to be set correctly (for the example above: `-S
 
 _Minimal example:_
 
-mapping.nw (input):
+mapping.txt (input):
 
 ```text
 acc1	sp1	A_1,A_2	2
@@ -80,7 +88,7 @@ trees.nw (input):
 (((A_1,A_2),(H_2,H_1)),(((E_1,D_1),((F_1,F_2),(G_2,G_1))),(((E_2,D_2),(B_1,(C_2,B_2))),C_1)));
 ```
 
-command:
+Main AllCoPol command:
 
 ```bash
 allcopol -A mapping.txt -G trees.nw -S 1 -P PhyloNet_3.8.0.jar -t 5 -i 20
@@ -201,7 +209,7 @@ and a second file containing the averaged cluster coefficients
 UPDATE: `align_clusters` can be replaced by the newer and much faster [Crimp](https://github.com/ulilautenschlager/crimp/) tool, e.g. by running `./crimp -n 20 example.indfile`.
 In this case, the relevant output file will be named "example.indfile.permutations".
 For small inputs as in this example, it is also possible to perform exact rather than heuristic optimization using the `-x` option, e.g. with `./crimp -x example.indfile`.
-By default, Crimp optimizes a slightly different objective function than the original `align_clusters`. To stick with the entropy-based one, you can use the `-e` option, however, scores will still differ by a factor of log(2) because `align_clusters` uses natural logarithms whereas Crimp uses binary ones.
+By default, Crimp optimizes a slightly different objective function than the original `align_clusters`. To stick with the entropy-based one, you can use the `-e` option, however, scores will still differ by a factor of log(2) because `align_clusters` uses natural logarithms, whereas Crimp uses binary ones.
 
 ### relabel_trees
 
